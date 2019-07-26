@@ -26,6 +26,8 @@ Of 21 total hashes checked, 21 were matches.
 
 ## Running the tests
 
+Testing can be done by exporting CSV metadata from VTechData (FedoraRepo/ Samvera) and downloading several tarred, bagged data sets to a local machine. Then enter the paths to the CSV spreadsheet, the tarred bags, and the place where you want the log file to be into the command for check_sums.py and run it.
+
 Test1: Run on data sets that contain files with the same names.
 
 Test2: Run with checksum hashes that don't match. See if it catches them.
