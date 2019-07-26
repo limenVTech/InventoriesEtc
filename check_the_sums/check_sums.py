@@ -4,7 +4,6 @@
 Created for Data Services, by L. I. Menzies, 2019-07-22.
 """
 
-
 import argparse
 import codecs
 import csv
@@ -60,7 +59,7 @@ def check_sums(csvsums, bagsums, logdir):
                     match = 'y'
                 found = True
                 total += 1
-                break # Breaks the loop at the first filename and id match
+                break  # Breaks the loop at the first filename and id match
         if found == True:
             newrow = {}
             newrow['filename'] = i[0]
@@ -95,4 +94,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
