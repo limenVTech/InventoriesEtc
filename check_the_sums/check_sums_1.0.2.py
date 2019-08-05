@@ -50,7 +50,7 @@ def bag_sums(bagdir):
                     if 'data' in fname:
                         bag_file_count += 1
                     if 'DisseminationContent' in fname:
-                        if not 'DissemintatedMetadata' in fname:
+                        if not 'DisseminatedMetadata' in fname:
                             dissem_actual += 1
                     if path.basename(fname) == 'manifest-md5.txt':
                         bagit_manifest = codecs.getreader("utf-8")(tar.extractfile(fname))
@@ -89,7 +89,8 @@ def bag_sums(bagdir):
                 print(f'----- {item} -----\n'
                       f'Total files in bag: {bag_file_count}\n'
                       f'Total files in BagIt manifest: {total_bagit}\n'
-                      f'No. of disseminated files: {dissem_total}')
+                      f'No. files in DisseminatedContent: {dissem_actual}\n'
+                      f'No. files in DisseminatedMetadata: {dissem_total}')
     # Compare the checksums in the DisseminatedMetadata file with the one in the BagIt 'manifest-md5.txt' file
     for ck in dissem_mdata:
         is_there = 'n'
