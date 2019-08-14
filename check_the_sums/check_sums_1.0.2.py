@@ -49,7 +49,7 @@ def bag_sums(bagdir):
                     fname = member.name
                     if 'data' in fname:
                         bag_file_count += 1
-                    if 'DisseminationContent' in fname:
+                    if 'DisseminationContent' or 'DisseminatedContent' in fname:
                         if not 'DisseminatedMetadata' in fname:
                             dissem_actual += 1
                     if path.basename(fname) == 'manifest-md5.txt':
