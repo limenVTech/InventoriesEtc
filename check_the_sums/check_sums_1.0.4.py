@@ -109,8 +109,8 @@ def bag_sums(bagdir):
         if is_there == 'y':
             if not ck[2] == ha[2]:
                 print(f'**** There was an error with bag <{ck[3]}>. ****\n'
-                      f'The md5 in the BagIt manifest for file: {ck[0]} \n'
-                      f'does not match the one in the DisseminatedMetadata file.\n'
+                      f'The md5 in the BagIt manifest for file: {ck[0]} ({ck[2]})\n'
+                      f'does not match the one in the DisseminatedMetadata file ({ha[2]}).\n'
                       f'Quitting...\n')
                 exit()
         elif is_there == 'n':
