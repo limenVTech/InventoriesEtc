@@ -77,7 +77,7 @@ def run_inventory(indir, outdir):
                 # remove(filepathname)
                 dsstore_count += 1
             elif not basename(filepathname) == '.DS_Store':
-                if 'tar' in name.split('.')
+                if 'tar' in name.split('.'):
                     filecounter += 1
                     rownum = str(filecounter)
                     statinfo = stat(filepathname)
