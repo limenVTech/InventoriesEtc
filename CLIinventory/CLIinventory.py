@@ -17,22 +17,28 @@ from os import walk, stat, remove
 from os.path import join, basename, dirname, relpath, isdir
 from time import strftime, localtime
 
+CHUNKSIZE = io.DEFAULT_BUFFER_SIZE
+
 def md5hash(file_name):
     """ Generate SHA3-256 hashes. """
-    chunksize = io.DEFAULT_BUFFER_SIZE
     hash_md5 = hashlib.md5()
-    with open(file_name, "rb") as md5file:
-        for chunks in iter(lambda: md5file.read(chunksize), b""):
-            hash_md5.update(chunks)
+    try:
+        with open(file_name, "rb") as md5file:
+            for chunks in iter(lambda: md5file.read(CHUNKSIZE), b""):
+                hash_md5.update(chunks)
+    except OSError:
+        return "OS Error"
     return hash_md5.hexdigest()
 
 def sha3hash(filname):
     """ Generate SHA3-256 hashes. """
-    chunksize = io.DEFAULT_BUFFER_SIZE
     hash_sha3 = hashlib.sha3_256()
-    with open(filname, "rb") as sha3file:
-        for chunks in iter(lambda: sha3file.read(chunksize), b""):
-            hash_sha3.update(chunks)
+    try:
+        with open(filname, "rb") as sha3file:
+            for chunks in iter(lambda: sha3file.read(CHUNKSIZE), b""):
+                hash_sha3.update(chunks)
+    except OSError:
+        return "OS Error"
     return hash_sha3.hexdigest()
 
 
