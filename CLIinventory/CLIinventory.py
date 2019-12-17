@@ -12,10 +12,19 @@ import hashlib
 import io
 import math
 import mimetypes
+import operator
 from os import walk, stat, remove
 from os.path import join, basename, dirname, relpath, isdir
 from time import strftime, localtime
 
+def md5hash(file_name):
+    """ Generate SHA3-256 hashes. """
+    chunksize = io.DEFAULT_BUFFER_SIZE
+    hash_md5 = hashlib.md5()
+    with open(file_name, "rb") as md5file:
+        for chunks in iter(lambda: md5file.read(chunksize), b""):
+            hash_md5.update(chunks)
+    return hash_md5.hexdigest()
 
 def sha3hash(filname):
     """ Generate SHA3-256 hashes. """
@@ -44,11 +53,12 @@ def convert_size(size):
 def run_inventory(indir, outdir):
     """ Run the inventory and output as Inv_<name>_<datetime>.csv. """
     filecounter = 0
-    inventory = open(join(outdir, 'Inv_%s_%s.csv'
-                          % (basename(indir), strftime("%Y%b%d_%H%M%S"))), 'w')
-    colnames = ['No.', 'Filename', 'Filesize', 'Filetype', 'C-Time',
-                'Modified', 'Accessed', 'SHA3_256', 'SHA3-Time', 'RelPath',
-                '=>', 'mode', 'inode', 'device', 'enlink', 'user', 'group']
+    inv_path = join(outdir, f'Inventory{strftime("%Y%b%d_%H%M%S")}temp.csv')
+    inventory = open(inv_path, 'w')
+    colnames = ['No.', 'Filename', 'RelPath', 'Filesize', 'Filetype', 'C-Time',
+                'Modified', 'Accessed', 'MD5', 'MD5-Time', 'SHA3_256',
+                'SHA3-Time','=>', 'mode', 'inode', 'device',
+                'enlink', 'user', 'group']
     writeCSV = csv.writer(inventory)
     writeCSV.writerow(colnames)
     for base, dirs, files in walk(indir):
@@ -72,8 +82,10 @@ def run_inventory(indir, outdir):
                                      localtime(statinfo.st_mtime))
                 accessdate = strftime("%Y.%m.%d %H:%M:%S",
                                       localtime(statinfo.st_atime))
+                md5sum = md5hash(filepathname)
+                md5time = strftime("%Y.%m.%d %H:%M:%S")
                 sha3sum = sha3hash(filepathname)
-                runtime = strftime("%Y.%m.%d %H:%M:%S")
+                sha3time = strftime("%Y.%m.%d %H:%M:%S")
                 filemode = str(statinfo.st_mode)
                 fileino = str(statinfo.st_ino)
                 filedevice = str(statinfo.st_dev)
@@ -81,24 +93,41 @@ def run_inventory(indir, outdir):
                 fileuser = str(statinfo.st_uid)
                 filegroup = str(statinfo.st_gid)
                 showpath = relpath(filepathname, dirname(indir))
-                newrow = [rownum, name, csize, filemime, filectime, modifdate,
-                          accessdate, sha3sum, runtime, showpath, ' ', filemode,
-                          fileino, filedevice, filenlink, fileuser, filegroup]
+                newrow = [rownum, name, showpath, csize, filemime, filectime,
+                            modifdate, accessdate, md5sum, md5time, sha3sum,
+                            sha3time, ' ', filemode, fileino, filedevice,
+                            filenlink, fileuser, filegroup]
                 writeCSV.writerow(newrow)
     inventory.close()
+    return inv_path
+
+
+def sort_inventory(unsorted_file, in_dir):
+    output_path = join(dirname(unsorted_file), f'Inventory_{basename(in_dir)}_{strftime("%Y%b%d_%H%M%S")}.csv')
+    with open(unsorted_file, 'r') as un_csv:
+        reading = csv.DictReader(un_csv)
+        headers = reading.fieldnames
+        sorted_data = sorted(reading, key=lambda row: row['RelPath'], reverse=False)
+    with open(output_path, 'w') as out_csv:
+        writing = csv.DictWriter(out_csv, fieldnames=headers)
+        writing.writeheader()
+        for rrows in sorted_data:
+            writing.writerow(rrows)
+    remove(unsorted_file)
+    return
 
 
 def main():
     print('What is the path to the directory to be inventoried (Do not include final slash)? ')
     invpath = input('Input Path: ')
     print('What is the path to the directory where the results will be stored (Do not include final slash)? ')
-    workdir = input('Output Path: ')
-    if not isdir(invpath) or not isdir(workdir):
-        print(
-            'Error: Could not find the input directory:\n    \'%s\'\nor output directory:\n    \'%s\'\nQuitting...' % (
-            invpath, workdir))
+    outputdir = input('Output Path: ')
+    if not isdir(invpath) or not isdir(outputdir):
+        print(f'Error: Could not find the input directory:\n    \'{invpath}\'\nor output directory:\n    \'{workdir}\'\nQuitting...')
     else:
-        run_inventory(invpath, workdir)
+        temp_inv = run_inventory(invpath, outputdir)
+        print(f'Output Path: {temp_inv}')
+        sort_inventory(temp_inv, invpath)
     print('Done.')
 
 
