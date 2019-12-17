@@ -114,6 +114,7 @@ def run_inventory(indir, outdir):
 
 
 def sort_inventory(unsorted_file, in_dir):
+    print(f'Sorting Data... ')
     output_path = join(dirname(unsorted_file), f'Inventory_{basename(in_dir)}_{strftime("%Y%b%d_%H%M%S")}.csv')
     with open(unsorted_file, 'r') as un_csv:
         reading = csv.DictReader(un_csv)
@@ -122,7 +123,10 @@ def sort_inventory(unsorted_file, in_dir):
     with open(output_path, 'w') as out_csv:
         writing = csv.DictWriter(out_csv, fieldnames=headers)
         writing.writeheader()
+        n = 1
         for rrows in sorted_data:
+            rrows['No.'] = str(n)
+            n += 1
             writing.writerow(rrows)
     remove(unsorted_file)
     return output_path
