@@ -59,6 +59,7 @@ def convert_size(size):
 def run_inventory(indir, outdir):
     """ Run the inventory and output as Inv_<name>_<datetime>.csv. """
     filecounter = 0
+    dsstore_count = 0
     inv_path = join(outdir, f'Inventory{strftime("%Y%b%d_%H%M%S")}temp.csv')
     inventory = open(inv_path, 'w')
     colnames = ['No.', 'Filename', 'RelPath', 'Filesize', 'Filetype', 'C-Time',
@@ -70,9 +71,10 @@ def run_inventory(indir, outdir):
     for base, dirs, files in walk(indir):
         for name in files:
             filepathname = join(base, name)
-            # Delete .DS_Store Files
+            # Ignore or delete .DS_Store Files
             if basename(filepathname) == '.DS_Store':
-                remove(filepathname)
+                # remove(filepathname)
+                dsstore_count += 1
             elif not basename(filepathname) == '.DS_Store':
                 filecounter += 1
                 rownum = str(filecounter)
@@ -106,6 +108,8 @@ def run_inventory(indir, outdir):
                 writeCSV.writerow(newrow)
                 print(f'\rProgress: {filecounter} Files', end='')
     inventory.close()
+    if dsstore_count > 0:
+        print(f'\nSkipped {dsstore_count} \'.DS_Store\' files.\n')
     return inv_path
 
 
