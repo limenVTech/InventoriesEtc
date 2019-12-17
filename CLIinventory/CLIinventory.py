@@ -98,6 +98,7 @@ def run_inventory(indir, outdir):
                             sha3time, ' ', filemode, fileino, filedevice,
                             filenlink, fileuser, filegroup]
                 writeCSV.writerow(newrow)
+                print(f'\rProgress: {filecounter} Files', end='')
     inventory.close()
     return inv_path
 
@@ -114,7 +115,7 @@ def sort_inventory(unsorted_file, in_dir):
         for rrows in sorted_data:
             writing.writerow(rrows)
     remove(unsorted_file)
-    return
+    return output_path
 
 
 def main():
@@ -122,13 +123,14 @@ def main():
     invpath = input('Input Path: ')
     print('What is the path to the directory where the results will be stored (Do not include final slash)? ')
     outputdir = input('Output Path: ')
+    print('\n')
     if not isdir(invpath) or not isdir(outputdir):
         print(f'Error: Could not find the input directory:\n    \'{invpath}\'\nor output directory:\n    \'{workdir}\'\nQuitting...')
     else:
         temp_inv = run_inventory(invpath, outputdir)
-        print(f'Output Path: {temp_inv}')
-        sort_inventory(temp_inv, invpath)
-    print('Done.')
+        inventory_sorted = sort_inventory(temp_inv, invpath)
+        print(f'\nOutput File: {inventory_sorted}')
+    print('\nDone.\n')
 
 
 if __name__ == "__main__":
