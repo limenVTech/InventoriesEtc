@@ -37,9 +37,10 @@ def check_sums(csv1sums, csv2sums, logdir):
     good = 0
     runtime = strftime('%Y%b%d%H%M%S')
     headerow = ['filename', 'short_path', 'md5_csv1', 'md5_csv2', 'sha3_256_csv1', 'sha3_256_csv2', 'matches (y/n)', 'timestamp']
-    logfile = open(path.join(logdir, f'Checksums_Log_{runtime}.csv'), 'w')
+    logfile = open(path.join(logdir, f'Inv_Compare_{runtime}.csv'), 'w')
     log_writer = csv.DictWriter(logfile, fieldnames=headerow)
     log_writer.writeheader()
+    errfile = open(path.join(logdir, f'Unmatched_{runtime}.txt'), 'w')
     for i in csv2sums:
         found = False
         match = 'n'
@@ -62,7 +63,10 @@ def check_sums(csv1sums, csv2sums, logdir):
             newrow['matches (y/n)'] = match
             newrow['timestamp'] = strftime("%Y-%m-%dT%H:%M:%S-04:00")
             log_writer.writerow(newrow)
+        else:
+            errfile.write(f'Could not find match for: {i[0]} with path: {i[1]}\n')
     logfile.close()
+    errfile.close()
     return [total, good]
 
 
