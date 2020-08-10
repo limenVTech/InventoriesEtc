@@ -4,7 +4,7 @@ A script to compare checksum hashes from FedoraRepo CSV output (VTData) with the
 
 ## Getting Started
 
-Runs on Python 3. Download script and run:
+Runs on Python 3. Download script and run: 
 
 ```
 python3 check_sums.py -s <SPREADSHEET> -b <BAGS DIRECTORY> -l <LOG DIRECTORY>
